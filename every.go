@@ -1,5 +1,6 @@
 package main
 
+import "strings"
 import "os/exec"
 import "flag"
 import "time"
@@ -84,29 +85,28 @@ func main() {
 	}
 
 	// command name and args
-	name := argv[1]
-	args := argv[2:]
+	cmd := strings.Join(argv[1:], " ")
 
 	// run
-	log.Printf("every %s running `%s %s`", interval, name, args)
+	log.Printf("every %s running `%s`", interval, cmd)
 
 	for {
 		time.Sleep(interval)
 		start := time.Now()
-		log.Printf("exec `%s %s`", name, args)
-		cmd := exec.Command(name, args...)
+		log.Printf("exec `%s`", cmd)
+		proc := exec.Command("/bin/sh", "-c", cmd)
 
 		if !*nostdout {
-			cmd.Stdout = os.Stdout
+			proc.Stdout = os.Stdout
 		}
 
 		if !*nostderr {
-			cmd.Stderr = os.Stderr
+			proc.Stderr = os.Stderr
 		}
 
-		cmd.Start()
-		err := cmd.Wait()
-		ps := cmd.ProcessState
+		proc.Start()
+		err := proc.Wait()
+		ps := proc.ProcessState
 
 		if err != nil {
 			log.Printf("pid %d failed with %s", ps.Pid(), ps.String())

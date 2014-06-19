@@ -32,6 +32,13 @@ $ go get github.com/visionmedia/go-every
 $ every 1h do-redis-backup /data/dump.rdb
 ```
 
+  Commands are passed through `sh(1)` so you may utilize
+  shell features such as globbing.
+
+```
+$ every 1m "sudo rm -fr /tmp/something/*"
+```
+
 ## Options
 
   By default command stdio is piped through for display, and command failures are simply logged and ignored. If you wish to exit on failure use `--exit`.
