@@ -90,8 +90,9 @@ func main() {
 	// run
 	log.Printf("every %s running `%s`", interval, cmd)
 
+	var correction time.Duration = 0
 	for {
-		time.Sleep(interval)
+		time.Sleep(interval - correction)
 		start := time.Now()
 		log.Printf("exec `%s`", cmd)
 		proc := exec.Command("/bin/sh", "-c", cmd)
@@ -116,6 +117,8 @@ func main() {
 			continue
 		}
 
-		log.Printf("pid %d completed in %s", ps.Pid(), time.Since(start))
+		duration := time.Since(start)
+		log.Printf("pid %d completed in %s", ps.Pid(), duration)
+		correction = duration
 	}
 }
